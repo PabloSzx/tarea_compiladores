@@ -14,7 +14,7 @@ http://jflex.de/manual.html
 
 
 PARA COMPILAR CUP:  
-java -cp java-cup-11b-runtime.jar:. java_cup.Main as.cup  
+java -cp java-cup-11b.jar:. java_cup.Main as.cup  
 PARA COMPILAR JFLEX:  
 jflex al.flex  
 PARA COMPILAR MAIN:  

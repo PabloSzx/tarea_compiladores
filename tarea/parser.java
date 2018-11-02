@@ -4,6 +4,9 @@
 //----------------------------------------------------
 
 import java_cup.runtime.*;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
 import java_cup.runtime.XMLElement;
 
 /** CUP v0.11b 20160615 (GIT 4ac7450) generated parser.
@@ -140,7 +143,8 @@ public class parser extends java_cup.runtime.lr_parser {
 
 
 
-    
+    private JFrame mainFrame;
+
     /* Change the method report_error so it will display the line and
        column of where the error occurred in the input as well as the
        reason for the error which is passed into the method in the

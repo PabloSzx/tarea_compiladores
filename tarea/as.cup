@@ -1,7 +1,11 @@
 import java_cup.runtime.*;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
 
 parser code {:
-    
+    private JFrame mainFrame;
+
     /* Change the method report_error so it will display the line and
        column of where the error occurred in the input as well as the
        reason for the error which is passed into the method in the
@@ -61,7 +65,15 @@ terminal Integer ID, DIGITO, C;
 
 non terminal Object I, A;
 non terminal Integer B, N, D;
-   S ::= EDITAR A TERMINO
+   S ::= EDITAR
+        {: 
+        this.mainFrame = new JFrame("ETT");
+        this.mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
+        this.mainFrame.setSize(1440, 900);
+        //this.mainFrame.add(new DrawPanel());
+        this.mainFrame.setVisible(true);
+         :}
+         A TERMINO
         ;
    A ::= A I
         |
