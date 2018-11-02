@@ -29,7 +29,7 @@ public class Main {
     try {
         Console cnsl = System.console();
 
-      Parser p = new Parser(new Lexer(new FileReader(argv[0])));
+      Parser p = new Parser(new Lexer(System.console().reader()));
       Object result = p.parse().value;      
     } catch (Exception e) {
       /* do cleanup here -- possibly rethrow e */

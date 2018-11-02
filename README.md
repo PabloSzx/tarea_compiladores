@@ -9,4 +9,18 @@ links de utilidad:
 http://www2.cs.tum.edu/projects/cup/examples.php
 http://www2.cs.tum.edu/projects/cup/docs.php
 https://github.com/moy/JFlex/tree/master/jflex/examples
+https://github.com/moy/JFlex/tree/master/jflex/examples/cup
 http://jflex.de/manual.html
+
+
+PARA COMPILAR CUP:
+java -cp java-cup-11b-runtime.jar:. java_cup.Main as.cup
+PARA COMPILAR JFLEX:
+jflex al.flex
+PARA COMPILAR MAIN:
+javac -cp java-cup-11b-runtime.jar:. *.java
+PARA EJECUTAR MAIN:
+java -cp java-cup-11b-runtime.jar:. Main
+
+
+EN ESE MISMO ORDEN: CUP -> JFLEX -> MAIN
