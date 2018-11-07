@@ -65,7 +65,8 @@ terminal Integer ID, DIGITO, C;
 
 non terminal Object I, A, S;
 non terminal Integer B, N, D;
-   S ::= EDITAR
+
+   S ::= 
         {: 
         mainFrame = new JFrame("ETT");
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
@@ -73,6 +74,7 @@ non terminal Integer B, N, D;
         //this.mainFrame.add(new DrawPanel());
         mainFrame.setVisible(true);
          :}
+        EDITAR
          A TERMINO
         ;
    A ::= A I
@@ -80,20 +82,20 @@ non terminal Integer B, N, D;
         I
         ;
 
-    I ::= POS LPAREN N:a COMMA N:b RPAREN
-            {: System.out.println("POS " + a + "  " + b); :}
+    I ::= POS LPAREN N:a COMMA N:b {: System.out.println("POS " + a + "  " + b); :}
+            RPAREN
           |
-          IZQ LPAREN D RPAREN
+          IZQ LPAREN D:a  {: System.out.println("IZQ " + a); :} RPAREN
           |
-          DER LPAREN D RPAREN
+          DER LPAREN D:a  {: System.out.println("DER " + a); :} RPAREN
           |
-          ABA LPAREN D RPAREN
+          ABA LPAREN D:a  {: System.out.println("ABA " + a); :} RPAREN
           |
-          ARR LPAREN D RPAREN
+          ARR LPAREN D:a  {: System.out.println("ARR " + a); :} RPAREN
           |
-          DAVALOR ID EQUAL N
+          DAVALOR ID:id EQUAL N:n  {: System.out.println("DAVALOR " + id + " = " + n); :}
           |
-          COLOR LPAREN B RPAREN
+          COLOR LPAREN B:a  {: System.out.println("COLOR " + a); :} RPAREN
           ;
     
     D ::= ID:a
