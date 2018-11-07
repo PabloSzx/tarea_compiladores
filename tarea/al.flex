@@ -1,5 +1,5 @@
 import java_cup.runtime.*;
-
+import java.util.*;
 %%
 
 %class Lexer
@@ -7,8 +7,16 @@ import java_cup.runtime.*;
 %line
 %column
 
+%init{
+
+this.i = 0;
+this.tabla = new Hashtable<String, Integer>();
+
+%init}
 
 %{   
+    private Integer i;
+    private Hashtable<String, Integer> tabla;
     /* To create a new java_cup.runtime.Symbol with information about
        the current token, the token will have no value in this
        case. */
@@ -20,6 +28,17 @@ import java_cup.runtime.*;
        about the current token, but this object has a value. */
     private Symbol symbol(int type, Object value) {
         return new Symbol(type, yyline, yycolumn, value);
+    }
+
+    private int get() {
+        int aux;
+        if (this.tabla.containsKey(this.yytext())) {
+            aux = this.tabla.get(this.yytext());
+        } else {
+            this.tabla.put(this.yytext(), ++this.i);
+            aux = this.i;
+        }
+        return aux;
     }
 %}
 
@@ -53,15 +72,15 @@ COLOR = color
 {ABA}                           { return symbol(sym.ABA); }
 {DAVALOR}                       { return symbol(sym.DAVALOR); }
 {COLOR}                         { return symbol(sym.COLOR); }
-{C}                             { return symbol(sym.C); }
 {TERMINO}                       { return symbol(sym.TERMINO); }
 "("                             { return symbol(sym.LPAREN); }
 ")"                             { return symbol(sym.RPAREN); }
 ","                             { return symbol(sym.COMMA); }
 "="                             { return symbol(sym.EQUAL); }
 
+{C}                             { return symbol(sym.C, yytext()); }
 {DIGITO}                        { return symbol(sym.DIGITO, new Integer(yytext())); }
-{ID}                            { return symbol(sym.ID, yytext()); }
+{ID}                            { return symbol(sym.ID, this.get()); }
 
 {WhiteSpace}                    {  /* IGNORE */ }
 }
