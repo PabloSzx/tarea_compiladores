@@ -42,15 +42,6 @@ ARR = arr
 ABA = aba
 DAVALOR = davalor
 COLOR = color
-
-
-
-B = {C}|{ID}
-N = {ID}|{DIGITO}|{C}
-D = {ID}|{DIGITO}
-
-I = pos\({N},{N}\)|izq\({D}\)|der\(D\)|arr\({D}\)|davalor {ID}={N}|color\(B\)
-
 %%
 
 <YYINITIAL> {
