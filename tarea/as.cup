@@ -115,8 +115,7 @@ terminal    POS, IZQ, DER, ARR, ABA, DAVALOR, COLOR, EDITAR, TERMINO, LPAREN, RP
 terminal Integer ID, DIGITO, C;
    
 
-non terminal Object I, A, S, B, N;
-non terminal Integer D;
+non terminal Object I, A, S, B, N, D;
 
    S ::= 
         {: 
@@ -127,6 +126,8 @@ non terminal Integer D;
         mainFrame.add(dibujo);
         mainFrame.setVisible(true);
         memoria = new Hashtable<Integer, Object>();
+        memoria2 = new ArrayList<Instruccion>;
+        
          :}
         EDITAR
          A TERMINO
@@ -136,12 +137,18 @@ non terminal Integer D;
         I
         ;
 
-    I ::= POS LPAREN N:a COMMA N:b {: System.out.println("POS " + a + "  " + b); :}
+    I ::= POS LPAREN N:a COMMA N:b {: 
+            memoria2.add(new Instruccion(a,b));
+            System.out.println("POS " + a + "  " + b); :} 
             RPAREN
           |
-          IZQ LPAREN D:a  {: System.out.println("IZQ " + a); :} RPAREN
+          IZQ LPAREN D:a  {: 
+            memoria2.add(new Instruccion(a));
+            System.out.println("IZQ " + a); :} 
+            RPAREN
           |
-          DER LPAREN D:a  {: System.out.println("DER " + a); :} RPAREN
+          DER LPAREN D:a  {: 
+            System.out.println("DER " + a); :} RPAREN
           |
           ABA LPAREN D:a  {: System.out.println("ABA " + a); /* instrucciones.add(new Instruccion("abajo", (Integer)a))*/ :} RPAREN
           |
@@ -152,8 +159,8 @@ non terminal Integer D;
           COLOR LPAREN B:a  {: System.out.println("COLOR " + a); :} RPAREN
           ;
     
-    D ::= ID:a
-          {: RESULT = memoria.get(a); :}
+    D ::= ID:a.value
+          {: RESULT = memoria.get(a.value); :}
           |
           DIGITO:b
           {: RESULT = b; :}
