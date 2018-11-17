@@ -52,8 +52,8 @@ LineTerminator = \r|\n|\r\n
 
 WhiteSpace     = {LineTerminator} | [ \t\f]
 
-EDITAR = editar|EDITAR
-TERMINO = termino|TERMINO
+EDITAR = editar
+TERMINO = termino
 C = rojo|verde|amarillo|azul|blanco
 POS = pos
 IZQ = izq
@@ -79,7 +79,7 @@ COLOR = color
 ","                             { return symbol(sym.COMMA); }
 "="                             { return symbol(sym.EQUAL); }
 
-{C}                             { return symbol(sym.C, yytext()); }
+{C}                             { return symbol(sym.C, yytext().toLowerCase()); }
 {DIGITO}                        { return symbol(sym.DIGITO, new Integer(yytext())); }
 {ID}                            { return symbol(sym.ID, this.get()); }
 
