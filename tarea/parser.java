@@ -157,8 +157,41 @@ public class parser extends java_cup.runtime.lr_parser {
 
     private JFrame mainFrame;
     DrawPanel dibujo;
-    ArrayList<Object> instrucciones;
+    ArrayList<Instruccion> instrucciones;
     Hashtable<Integer,Object> memoria;
+
+    class Instruccion{
+        String tipo; //color / posicion / linea
+
+        //color
+        String color;
+
+        //posicion
+        Integer x;
+        Integer y;
+
+        //linea
+        String direccion; //arriba / abajo / izquierda / derecha
+        Integer largo;
+        
+        public Instruccion(String color) {
+            this.tipo = "color";
+            this.color = color;
+        }
+
+        public Instruccion(Integer x, Integer y) {
+            this.tipo = "posicion";
+            this.x = x;
+            this.y = y;
+        }
+
+        public Instruccion(String direccion, Integer largo) {
+            this.tipo = "linea";
+            this.direccion = direccion;
+            this.largo = largo;
+        }
+
+    }
 
 
     /* Change the method report_error so it will display the line and
@@ -169,7 +202,14 @@ public class parser extends java_cup.runtime.lr_parser {
     class DrawPanel extends JPanel{
 
         public void paintComponent(Graphics g) {
-            g.drawString("hola", 10, 10);
+            for (Instruccion i: instrucciones) {
+                /* 
+                switch (i):
+                case "posicion": g.translate(!"!23")
+                case "color": g.setcolor(asdasd);
+                case "linea": g.drawline(0,0,a,0)
+                */
+            }
         }
     }
     public void report_error(String message, Object info) {
@@ -252,10 +292,10 @@ class CUP$parser$actions {
         mainFrame = new JFrame("ETT");
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
         mainFrame.setSize(1440, 900);
-        //this.mainFrame.add(new DrawPanel());
         dibujo = new DrawPanel();
         mainFrame.add(dibujo);
         mainFrame.setVisible(true);
+        memoria = new Hashtable<Integer, Object>();
          
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$0",6, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -310,10 +350,10 @@ class CUP$parser$actions {
               Object RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
 		int aright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
-		Integer a = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+		Object a = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
 		int bleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int bright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
-		Integer b = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+		Object b = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
  System.out.println("POS " + a + "  " + b); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$1",7, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -327,10 +367,10 @@ class CUP$parser$actions {
                 RESULT = (Object) ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		int aleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)).left;
 		int aright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)).right;
-		Integer a = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-4)).value;
+		Object a = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-4)).value;
 		int bleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
 		int bright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
-		Integer b = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+		Object b = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("I",0, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-6)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -395,7 +435,7 @@ class CUP$parser$actions {
 		int aleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int aright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Integer a = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
- System.out.println("ABA " + a); 
+ System.out.println("ABA " + a); /* instrucciones.add(new Instruccion("abajo", (Integer)a))*/ 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$4",10, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -449,7 +489,7 @@ class CUP$parser$actions {
 		Integer id = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
 		int nleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int nright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
-		Integer n = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+		Object n = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		 System.out.println("DAVALOR " + id + " = " + n); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("I",0, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -461,7 +501,7 @@ class CUP$parser$actions {
               Object RESULT =null;
 		int aleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int aright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
-		Integer a = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+		Object a = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
  System.out.println("COLOR " + a); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$6",12, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -475,7 +515,7 @@ class CUP$parser$actions {
                 RESULT = (Object) ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		int aleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
 		int aright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
-		Integer a = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+		Object a = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("I",0, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -488,7 +528,7 @@ class CUP$parser$actions {
 		int aleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int aright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Integer a = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = a; 
+		 RESULT = (Integer)memoria.get(a.intValue()); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("D",5, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -508,7 +548,7 @@ class CUP$parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 20: // B ::= C 
             {
-              Integer RESULT =null;
+              Object RESULT =null;
 		int cleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int cright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Integer c = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
@@ -520,7 +560,7 @@ class CUP$parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 21: // B ::= ID 
             {
-              Integer RESULT =null;
+              Object RESULT =null;
 		int dleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int dright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Integer d = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
@@ -532,7 +572,7 @@ class CUP$parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 22: // N ::= ID 
             {
-              Integer RESULT =null;
+              Object RESULT =null;
 		int fleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int fright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Integer f = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
@@ -544,7 +584,7 @@ class CUP$parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 23: // N ::= DIGITO 
             {
-              Integer RESULT =null;
+              Object RESULT =null;
 		int gleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int gright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Integer g = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
@@ -556,7 +596,7 @@ class CUP$parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 24: // N ::= C 
             {
-              Integer RESULT =null;
+              Object RESULT =null;
 		int hleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int hright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Integer h = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;

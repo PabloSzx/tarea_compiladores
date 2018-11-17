@@ -115,8 +115,7 @@ terminal    POS, IZQ, DER, ARR, ABA, DAVALOR, COLOR, EDITAR, TERMINO, LPAREN, RP
 terminal Integer ID, DIGITO, C;
    
 
-non terminal Object I, A, S, B, N;
-non terminal Integer D;
+non terminal Object I, A, S, B, N, D;
 
    S ::= 
         {: 
@@ -153,23 +152,23 @@ non terminal Integer D;
           ;
     
     D ::= ID:a
-          {: RESULT = memoria.get(a); :}
+          {: RESULT = memoria.get(a.intValue()); :}
           |
           DIGITO:b
-          {: RESULT = b; :}
+          {: RESULT = b.intValue(); :}
           ;
 
     B ::= C:c
           {: RESULT = c; :}
           |
           ID:d
-          {: RESULT = d; :}
+          {: RESULT = memoria.get(d.intValue()); :}
           ;
     N ::= ID:f
-          {: RESULT = f; :}
+          {: RESULT = memoria.get(f.intValue()); :}
           |
           DIGITO:g
-          {: RESULT = g; :}
+          {: RESULT = g.intValue(); :}
           |
           C:h
           {: RESULT = h; :}
