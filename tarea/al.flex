@@ -3,6 +3,7 @@ import java.util.*;
 %%
 
 %class Lexer
+%caseless
 %cup
 %line
 %column
