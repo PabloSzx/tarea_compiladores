@@ -6,6 +6,7 @@
 import java_cup.runtime.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.*;
 import javax.swing.*;
 import java.util.*;
 import java_cup.runtime.XMLElement;
@@ -57,8 +58,8 @@ public class parser extends java_cup.runtime.lr_parser {
     "\014\047\001\002\000\004\015\043\001\002\000\004\015" +
     "\035\001\002\000\004\015\027\001\002\000\022\004\ufffd" +
     "\005\ufffd\006\ufffd\007\ufffd\010\ufffd\011\ufffd\012\ufffd\014" +
-    "\ufffd\001\002\000\004\021\021\001\002\000\004\020\022" +
-    "\001\002\000\010\021\023\022\024\023\026\001\002\000" +
+    "\ufffd\001\002\000\004\022\021\001\002\000\004\020\022" +
+    "\001\002\000\010\021\026\022\023\023\024\001\002\000" +
     "\026\004\uffeb\005\uffeb\006\uffeb\007\uffeb\010\uffeb\011\uffeb" +
     "\012\uffeb\014\uffeb\016\uffeb\017\uffeb\001\002\000\026\004" +
     "\uffea\005\uffea\006\uffea\007\uffea\010\uffea\011\uffea\012\uffea" +
@@ -66,27 +67,27 @@ public class parser extends java_cup.runtime.lr_parser {
     "\ufff2\006\ufff2\007\ufff2\010\ufff2\011\ufff2\012\ufff2\014\ufff2" +
     "\001\002\000\026\004\uffe9\005\uffe9\006\uffe9\007\uffe9\010" +
     "\uffe9\011\uffe9\012\uffe9\014\uffe9\016\uffe9\017\uffe9\001\002" +
-    "\000\006\021\030\022\032\001\002\000\004\016\uffef\001" +
+    "\000\006\022\030\023\032\001\002\000\004\016\uffef\001" +
     "\002\000\004\016\ufff6\001\002\000\004\016\uffee\001\002" +
     "\000\004\016\034\001\002\000\022\004\ufff5\005\ufff5\006" +
     "\ufff5\007\ufff5\010\ufff5\011\ufff5\012\ufff5\014\ufff5\001\002" +
-    "\000\010\021\023\022\024\023\026\001\002\000\004\017" +
-    "\037\001\002\000\010\021\023\022\024\023\026\001\002" +
+    "\000\010\021\026\022\023\023\024\001\002\000\004\017" +
+    "\037\001\002\000\010\021\026\022\023\023\024\001\002" +
     "\000\004\016\ufffc\001\002\000\004\016\042\001\002\000" +
     "\022\004\ufffb\005\ufffb\006\ufffb\007\ufffb\010\ufffb\011\ufffb" +
-    "\012\ufffb\014\ufffb\001\002\000\006\021\030\022\032\001" +
+    "\012\ufffb\014\ufffb\001\002\000\006\022\030\023\032\001" +
     "\002\000\004\016\ufff8\001\002\000\004\016\046\001\002" +
     "\000\022\004\ufff7\005\ufff7\006\ufff7\007\ufff7\010\ufff7\011" +
     "\ufff7\012\ufff7\014\ufff7\001\002\000\004\002\000\001\002" +
     "\000\022\004\ufffe\005\ufffe\006\ufffe\007\ufffe\010\ufffe\011" +
-    "\ufffe\012\ufffe\014\ufffe\001\002\000\006\021\052\023\053" +
+    "\ufffe\012\ufffe\014\ufffe\001\002\000\006\021\053\022\052" +
     "\001\002\000\004\016\uffec\001\002\000\004\016\uffed\001" +
     "\002\000\004\016\ufff1\001\002\000\004\016\056\001\002" +
     "\000\022\004\ufff0\005\ufff0\006\ufff0\007\ufff0\010\ufff0\011" +
-    "\ufff0\012\ufff0\014\ufff0\001\002\000\006\021\030\022\032" +
+    "\ufff0\012\ufff0\014\ufff0\001\002\000\006\022\030\023\032" +
     "\001\002\000\004\016\ufffa\001\002\000\004\016\062\001" +
     "\002\000\022\004\ufff9\005\ufff9\006\ufff9\007\ufff9\010\ufff9" +
-    "\011\ufff9\012\ufff9\014\ufff9\001\002\000\006\021\030\022" +
+    "\011\ufff9\012\ufff9\014\ufff9\001\002\000\006\022\030\023" +
     "\032\001\002\000\004\016\ufff4\001\002\000\004\016\066" +
     "\001\002\000\022\004\ufff3\005\ufff3\006\ufff3\007\ufff3\010" +
     "\ufff3\011\ufff3\012\ufff3\014\ufff3\001\002" });
@@ -156,11 +157,12 @@ public class parser extends java_cup.runtime.lr_parser {
 
 
     private JFrame mainFrame;
-    DrawPanel dibujo;
-    ArrayList<Instruccion> instrucciones;
-    Hashtable<Integer,Object> memoria;
+    private DrawPanel dibujo;
+    private ArrayList<Instruccion> instrucciones;
+    private Hashtable<Integer,Object> memoria;
+    private final Integer escala = 56;
 
-    class Instruccion{
+    public class Instruccion{
         String tipo; //color / posicion / linea
 
         //color
@@ -193,67 +195,107 @@ public class parser extends java_cup.runtime.lr_parser {
 
     }
 
-
-    /* Change the method report_error so it will display the line and
-       column of where the error occurred in the input as well as the
-       reason for the error which is passed into the method in the
-       String 'message'. */
-
-    class DrawPanel extends JPanel{
+    public class DrawPanel extends JPanel{
 
         public void paintComponent(Graphics g) {
-            for (Instruccion i: instrucciones) {
-                /* 
-                switch (i):
-                case "posicion": g.translate(!"!23")
-                case "color": g.setcolor(asdasd);
-                case "linea": g.drawline(0,0,a,0)
-                */
+            super.paintComponent(g);
+
+            Graphics2D g2d = (Graphics2D)g;
+
+            AffineTransform origen = g2d.getTransform();
+
+            for (Instruccion i:instrucciones) {
+                switch (i.tipo) {
+                    case "color":
+                    {
+                        switch (i.color)
+                        {
+                            case "rojo":
+                            {
+                                g.setColor(new Color(255, 0, 0));
+                                break;
+                            }
+                            case "amarillo":
+                            {
+                                g.setColor(new Color(255, 255, 0));
+                                break;
+                            }
+                            case "verde":
+                            {
+                                g.setColor(new Color(0, 255, 0));
+                                break;
+                            }
+                            case "blanco":
+                            {
+                                g.setColor(new Color(255, 255, 255));
+                                break;
+                            }
+                            case "azul":
+                            {
+                                g.setColor(new Color(0, 0, 255));
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                    case "posicion":
+                    {
+                        g2d.setTransform(origen);
+                        g.translate(i.x, i.y);
+                        break;
+                    }
+                    case "linea":
+                    {
+                        switch (i.direccion) {
+                            case "izquierda":
+                            {
+                                g.drawLine(0, 0, -i.largo * escala, 0);
+                                g.translate(-i.largo * escala, 0);
+                                break;
+                            }
+                            case "derecha":
+                            {
+                                g.drawLine(0, 0, i.largo * escala, 0);
+                                g.translate(i.largo * escala, 0);
+                                break;
+                            }
+                            case "abajo":
+                            {
+                                g.drawLine(0, 0, 0, i.largo * escala);
+                                g.translate(0, i.largo * escala);
+                                break;
+                            }
+                            case "arriba":
+                            {
+                                g.drawLine(0, 0, 0, -i.largo * escala);
+                                g.translate(0, i.largo * escala);
+                                break;
+                            }
+                        }
+                    }
+                }
             }
         }
     }
     public void report_error(String message, Object info) {
-   
-        /* Create a StringBuilder called 'm' with the string 'Error' in it. */
+
         StringBuilder m = new StringBuilder("Error");
    
-        /* Check if the information passed to the method is the same
-           type as the type java_cup.runtime.Symbol. */
         if (info instanceof java_cup.runtime.Symbol) {
-            /* Declare a java_cup.runtime.Symbol object 's' with the
-               information in the object info that is being typecasted
-               as a java_cup.runtime.Symbol object. */
             java_cup.runtime.Symbol s = ((java_cup.runtime.Symbol) info);
    
-            /* Check if the line number in the input is greater or
-               equal to zero. */
             if (s.left >= 0) {                
-                /* Add to the end of the StringBuilder error message
-                   the line number of the error in the input. */
                 m.append(" in line "+(s.left+1));   
-                /* Check if the column number in the input is greater
-                   or equal to zero. */
                 if (s.right >= 0)                    
-                    /* Add to the end of the StringBuilder error message
-                       the column number of the error in the input. */
                     m.append(", column "+(s.right+1));
             }
         }
    
-        /* Add to the end of the StringBuilder error message created in
-           this method the message that was passed into this method. */
         m.append(" : "+message);
    
-        /* Print the contents of the StringBuilder 'm', which contains
-           an error message, out on a line. */
         System.err.println(m);
     }
    
-    /* Change the method report_fatal_error so when it reports a fatal
-       error it will display the line and column number of where the
-       fatal error occurred in the input as well as the reason for the
-       fatal error which is passed into the method in the object
-       'message' and then exit.*/
     public void report_fatal_error(String message, Object info) {
         report_error(message, info);
         System.exit(1);
@@ -292,6 +334,8 @@ class CUP$parser$actions {
         mainFrame = new JFrame("ETT");
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
         mainFrame.setSize(1440, 900);
+        memoria = new Hashtable<Integer, Object>();
+        instrucciones = new ArrayList<Instruccion>(); 
         dibujo = new DrawPanel();
         mainFrame.add(dibujo);
         mainFrame.setVisible(true);
@@ -348,13 +392,15 @@ class CUP$parser$actions {
           case 5: // NT$1 ::= 
             {
               Object RESULT =null;
-		int aleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
-		int aright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
-		Object a = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
-		int bleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
-		int bright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
-		Object b = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
- System.out.println("POS " + a + "  " + b); 
+		int Xleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
+		int Xright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
+		Object X = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+		int Yleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
+		int Yright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
+		Object Y = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+
+            instrucciones.add(new Instruccion((Integer)X,(Integer)Y));
+            
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$1",7, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -365,12 +411,12 @@ class CUP$parser$actions {
               Object RESULT =null;
               // propagate RESULT from NT$1
                 RESULT = (Object) ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
-		int aleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)).left;
-		int aright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)).right;
-		Object a = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-4)).value;
-		int bleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
-		int bright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
-		Object b = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+		int Xleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)).left;
+		int Xright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)).right;
+		Object X = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-4)).value;
+		int Yleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
+		int Yright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
+		Object Y = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("I",0, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-6)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -380,10 +426,13 @@ class CUP$parser$actions {
           case 7: // NT$2 ::= 
             {
               Object RESULT =null;
-		int aleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
-		int aright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
-		Integer a = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
- System.out.println("IZQ " + a); 
+		int Lleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
+		int Lright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
+		Object L = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+ 
+            instrucciones.add(new Instruccion("izquierda",(Integer)L));
+            dibujo.repaint(); 
+            
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$2",8, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -394,9 +443,9 @@ class CUP$parser$actions {
               Object RESULT =null;
               // propagate RESULT from NT$2
                 RESULT = (Object) ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
-		int aleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
-		int aright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
-		Integer a = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+		int Lleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
+		int Lright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
+		Object L = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("I",0, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -406,10 +455,13 @@ class CUP$parser$actions {
           case 9: // NT$3 ::= 
             {
               Object RESULT =null;
-		int aleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
-		int aright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
-		Integer a = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
- System.out.println("DER " + a); 
+		int Lleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
+		int Lright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
+		Object L = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+
+            instrucciones.add(new Instruccion("derecha",(Integer)L));
+            dibujo.repaint(); 
+            
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$3",9, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -420,9 +472,9 @@ class CUP$parser$actions {
               Object RESULT =null;
               // propagate RESULT from NT$3
                 RESULT = (Object) ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
-		int aleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
-		int aright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
-		Integer a = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+		int Lleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
+		int Lright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
+		Object L = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("I",0, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -432,10 +484,13 @@ class CUP$parser$actions {
           case 11: // NT$4 ::= 
             {
               Object RESULT =null;
-		int aleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
-		int aright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
-		Integer a = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
- System.out.println("ABA " + a); /* instrucciones.add(new Instruccion("abajo", (Integer)a))*/ 
+		int Lleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
+		int Lright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
+		Object L = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+ 
+            instrucciones.add(new Instruccion("abajo",(Integer)L));
+            dibujo.repaint(); 
+            
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$4",10, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -446,9 +501,9 @@ class CUP$parser$actions {
               Object RESULT =null;
               // propagate RESULT from NT$4
                 RESULT = (Object) ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
-		int aleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
-		int aright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
-		Integer a = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+		int Lleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
+		int Lright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
+		Object L = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("I",0, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -458,10 +513,13 @@ class CUP$parser$actions {
           case 13: // NT$5 ::= 
             {
               Object RESULT =null;
-		int aleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
-		int aright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
-		Integer a = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
- System.out.println("ARR " + a); 
+		int Lleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
+		int Lright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
+		Object L = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+ 
+            instrucciones.add(new Instruccion("arriba",(Integer)L));
+            dibujo.repaint(); 
+            
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$5",11, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -472,9 +530,9 @@ class CUP$parser$actions {
               Object RESULT =null;
               // propagate RESULT from NT$5
                 RESULT = (Object) ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
-		int aleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
-		int aright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
-		Integer a = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+		int Lleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
+		int Lright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
+		Object L = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("I",0, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -484,13 +542,13 @@ class CUP$parser$actions {
           case 15: // I ::= DAVALOR ID EQUAL N 
             {
               Object RESULT =null;
-		int idleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
-		int idright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
-		Integer id = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
-		int nleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
-		int nright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
-		Object n = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 System.out.println("DAVALOR " + id + " = " + n); 
+		int IDleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
+		int IDright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
+		Integer ID = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+		int Nleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
+		int Nright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
+		Object N = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+		 memoria.put((Integer)ID, N); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("I",0, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -499,10 +557,13 @@ class CUP$parser$actions {
           case 16: // NT$6 ::= 
             {
               Object RESULT =null;
-		int aleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
-		int aright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
-		Object a = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
- System.out.println("COLOR " + a); 
+		int Cleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
+		int Cright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
+		Object C = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+ 
+            instrucciones.add(new Instruccion((String)C));
+            dibujo.repaint(); 
+            
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$6",12, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -513,9 +574,9 @@ class CUP$parser$actions {
               Object RESULT =null;
               // propagate RESULT from NT$6
                 RESULT = (Object) ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
-		int aleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
-		int aright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
-		Object a = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+		int Cleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
+		int Cright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
+		Object C = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("I",0, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -524,11 +585,11 @@ class CUP$parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 18: // D ::= ID 
             {
-              Integer RESULT =null;
-		int aleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
-		int aright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
-		Integer a = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = (Integer)memoria.get(a.intValue()); 
+              Object RESULT =null;
+		int IDleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
+		int IDright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
+		Integer ID = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+		 RESULT = memoria.get(ID); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("D",5, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -536,11 +597,11 @@ class CUP$parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 19: // D ::= DIGITO 
             {
-              Integer RESULT =null;
-		int bleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
-		int bright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
-		Integer b = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = b; 
+              Object RESULT =null;
+		int Dleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
+		int Dright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
+		Integer D = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+		 RESULT = D; 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("D",5, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -549,10 +610,10 @@ class CUP$parser$actions {
           case 20: // B ::= C 
             {
               Object RESULT =null;
-		int cleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
-		int cright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
-		Integer c = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = c; 
+		int Cleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
+		int Cright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
+		String C = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+		 RESULT = C; 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("B",3, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -561,10 +622,10 @@ class CUP$parser$actions {
           case 21: // B ::= ID 
             {
               Object RESULT =null;
-		int dleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
-		int dright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
-		Integer d = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = d; 
+		int IDleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
+		int IDright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
+		Integer ID = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+		 RESULT = memoria.get(ID); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("B",3, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -573,10 +634,10 @@ class CUP$parser$actions {
           case 22: // N ::= ID 
             {
               Object RESULT =null;
-		int fleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
-		int fright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
-		Integer f = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = f; 
+		int IDleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
+		int IDright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
+		Integer ID = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+		 RESULT = memoria.get(ID); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("N",4, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -585,10 +646,10 @@ class CUP$parser$actions {
           case 23: // N ::= DIGITO 
             {
               Object RESULT =null;
-		int gleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
-		int gright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
-		Integer g = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = g; 
+		int Dleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
+		int Dright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
+		Integer D = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+		 RESULT = D; 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("N",4, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -597,10 +658,10 @@ class CUP$parser$actions {
           case 24: // N ::= C 
             {
               Object RESULT =null;
-		int hleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
-		int hright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
-		Integer h = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = h; 
+		int Cleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
+		int Cright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
+		String C = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+		 RESULT = C; 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("N",4, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;

@@ -2,4 +2,7 @@
 .vscode
 *.java~
 *.java
+Lexer.java
+sym.java
+parser.java
 tarea/*.java

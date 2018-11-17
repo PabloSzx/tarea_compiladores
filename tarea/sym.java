@@ -17,12 +17,12 @@ public class sym {
   public static final int DER = 4;
   public static final int LPAREN = 11;
   public static final int POS = 2;
-  public static final int ID = 15;
+  public static final int ID = 16;
   public static final int EDITAR = 9;
   public static final int COMMA = 13;
-  public static final int C = 17;
   public static final int EOF = 0;
-  public static final int DIGITO = 16;
+  public static final int C = 15;
+  public static final int DIGITO = 17;
   public static final int error = 1;
   public static final String[] terminalNames = new String[] {
   "EOF",
@@ -40,9 +40,9 @@ public class sym {
   "RPAREN",
   "COMMA",
   "EQUAL",
+  "C",
   "ID",
-  "DIGITO",
-  "C"
+  "DIGITO"
   };
 }
 
