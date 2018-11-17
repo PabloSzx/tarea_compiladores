@@ -1,8 +1,6 @@
 *.class
 .vscode
 *.java~
-*.java
-Lexer.java
+va
 sym.java
 parser.java
-tarea/*.java

@@ -1,3 +1,4 @@
+package ett;
 import java_cup.runtime.*;
 import java.util.*;
 %%
