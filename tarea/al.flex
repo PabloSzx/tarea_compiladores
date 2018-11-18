@@ -18,22 +18,36 @@ this.tabla = new Hashtable<String, Integer>();
 
 %{  
     
+    /* 
+    Declaramos una variable auxiliar "i" que servira de contador 
+    para la función de asociación de cada ID a un identificador numérico.
+    */
     private Integer i;
+
+    /*
+    Declaramos la tabla Hash que almacenara la asociación de cada ID 
+    con su identificador numérico.
+    */
     private Hashtable<String, Integer> tabla;
     
-    /* crea un objeto simbolo del token capturado, donde para este caso será un blanco */
+
+    /*
+    Definimos un par de funciones necesaria para el uso de la 
+    clase "Symbol" que viene desde JFlex.
+    */
     
     private Symbol symbol(int type) {
         return new Symbol(type, yyline, yycolumn);
     }
     
-    /* crea un objeto simbolo del token capturado, con algún valor */
-    
     private Symbol symbol(int type, Object value) {
         return new Symbol(type, yyline, yycolumn, value);
     }
     
-    /*  Evalúa las capturas de la tabla hash ingresando o sacando valores   */
+    /*
+    Definimos la función que se ocupara para la creación y
+    obtención de los valores numericos asociados a cada ID
+    */
     
     private int get() {
         int aux;
@@ -48,7 +62,10 @@ this.tabla = new Hashtable<String, Integer>();
 %}
 
 
-/*  Determinación del formato de los token que formarán parte de la gramática a partir del analizador léxico   */
+/* 
+Determinación del formato de los token que formarán parte 
+de la gramática a partir del analizador léxico   
+*/
 
 ID = [a-zA-Z][a-zA-Z_0-9]*
 
@@ -72,7 +89,11 @@ COLOR = color
 
 
 
-/*  Permite retornar los valores correspondientes a la grámatica a usar, cuando se ingresen los tokens correspondientes para el analisador sintáctico    */
+/*  
+Retornamos los valores simbolicos correspondientes a los terminales
+de la grámatica a usar, cuando se ingresen los tokens correspondientes
+para el analizador sintáctico    
+*/
 
 <YYINITIAL> {
 {EDITAR}                        { return symbol(sym.EDITAR); }
@@ -93,7 +114,7 @@ COLOR = color
 {DIGITO}                        { return symbol(sym.DIGITO, new Integer(yytext())); }
 {ID}                            { return symbol(sym.ID, this.get()); }
 
-{WhiteSpace}                    {  /* IGNORE */ }
+{WhiteSpace}                    {  /* IGNORAR */ }
 }
 
 

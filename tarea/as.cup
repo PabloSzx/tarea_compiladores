@@ -8,7 +8,10 @@ import java.util.*;
 
 parser code {:
 
-    
+    /*
+    Se declaran las variables y constantes que se usarán al transcurso
+    de la ejecución del programa.
+    */
     private JFrame mainFrame;
     private DrawPanel dibujo;
     private ArrayList<Instruccion> instrucciones;
@@ -16,7 +19,10 @@ parser code {:
     private final Integer escala = 56;
 
     
-    /*  Se crea una clase para la creación de objetos que definan las instrucciones */
+    /*  
+    Se crea una clase para la creación de objetos 
+    que definirán las instrucciones de dibujado 
+    */
     
     public class Instruccion{
         String tipo; //color / posicion / linea
@@ -60,15 +66,18 @@ parser code {:
 
             Graphics2D g2d = (Graphics2D)g;
             
-            /*  permite redefinir el origen cuando se ejecute la instruccion posición   */
+            /*  
+            Se guarda la posición origen para ser hacer que la instruccion POS funcione
+            con valores absolutos y no relativos   
+            */
             
             AffineTransform origen = g2d.getTransform();
 
-            /*  Recorre las instrucciones ingresadas para dibujarlas en el panel según corresponda  */
+            /*  Recorre las instrucciones guardadas para dibujarlas en el panel en el orden que corresponda  */
             
             for (Instruccion i:instrucciones) {
                 switch (i.tipo) {
-                    case "color":       //permite cambiar el color de la forma a dibujar en el panel
+                    case "color":       //  Se establece el color para el dibujado de trazos
                     {
                         switch (i.color)
                         {
@@ -97,17 +106,20 @@ parser code {:
                                 g.setColor(new Color(0, 0, 255));
                                 break;
                             }
+                            default:
+                                break;
                         }
                         break;
                     }
-                    case "posicion":    //redefine el origen para posicionar un nuevo objeto a dibujar en el panel según las coordenadas ingresadas
-                    {                   //escala definida es a pixel
+                    case "posicion":    //  Se redefine el origen para posicionar un nuevo objeto a dibujar en el panel 
+                                        //  según las coordenadas ingresadas.
+                    {                   //  Escala definida es a pixel
                         g2d.setTransform(origen);
                         g.translate(i.x, i.y);
                         break;
                     }
-                    case "linea":       //define la dirección del objeto a dibujar en el panel a través de su largo ingresandola en coordenadas 
-                    {                   //escala definida es a centímetros
+                    case "linea":       //  Define la dirección del trazo a dibujar en el panel con su largo y dirección
+                    {                   //  Escala definida es a centímetros (1 pixel =~ 56 centimetros) (Resolucion 1920x1080, 15.6")
                         switch (i.direccion) {
                             case "izquierda":
                             {
@@ -141,7 +153,7 @@ parser code {:
     }
     
     
-    /*  Manejo de errores para simbolos incorrectos, entregando un mensaje en pantalla */
+    /*  Manejo de errores para símbolos incorrectos, entregando un mensaje en pantalla */
     
     public void report_error(String message, Object info) {
 
@@ -168,7 +180,10 @@ parser code {:
     }
 :};
 
-/*  Sección que determina los terminales de la gramática a usar */
+/*  
+Sección que determina los terminales de la gramática a usar que
+vienen definidos desde el Analizador Léxico.
+*/
 terminal    POS, IZQ, DER, ARR, ABA, DAVALOR, COLOR, EDITAR, TERMINO, LPAREN, RPAREN, COMMA, EQUAL;
 terminal String C;
 terminal Integer ID, DIGITO;
@@ -180,10 +195,10 @@ non terminal Object I, A, S, B, N, D;
 
 
 
-/*  Comienzo de la gramática y ejecución del programa que usa analizador sintáctico    */
+/*  Comienzo de la gramática y ejecución de la traducción dirigida por sintaxis    */
 
     /*  Producción S-> EDITAR A TERMINO   */
-    /*  Ademas de dar comienzo a la grmática para la serie de instrucciones, permite cargar la interfaz gráfica e inicializar algunos componentes   */
+    /*  Ademas de dar comienzo a la gramática para la serie de instrucciones, permite cargar la interfaz gráfica e inicializar algunos componentes   */
    S ::= 
         {: 
         mainFrame = new JFrame("ETT");
@@ -207,50 +222,56 @@ non terminal Object I, A, S, B, N, D;
         ;
     
     /*  Producción I-> POS(X,Y) | IZQ(D) | DER(D) | ARR(D) | ABA(D) | DAVALOR ID=N | COLOR(B) */
-    /*  Permite ingresar a una lista los objetos de tipo Instruccion, las instrucciones capturadas en pantalla, 
-        también guarda en tabla hash terminales de tipo enteros, además de dibujar las lineas de las instrucciones ingresadas   */
+    /*  
+    Permite ingresar a una lista los objetos de tipo Instruccion, 
+    las instrucciones capturadas en pantalla, también guarda 
+    en tabla hash terminales de tipo enteros, además de dibujar 
+    las lineas de las instrucciones ingresadas   
+    */
     
     I ::= POS LPAREN N:X COMMA N:Y 
             {:
-            instrucciones.add(new Instruccion((Integer)X,(Integer)Y));      //genera un objeto de la clase "Instruccion" cual es almacenada en una lista
+            instrucciones.add(new Instruccion((Integer)X,(Integer)Y));      // Se genera un objeto de la clase "Instruccion" la cual es almacenada en la lista "instrucciones"
             :}
             RPAREN
           |
           IZQ LPAREN D:L  
             {: 
-            instrucciones.add(new Instruccion("izquierda",(Integer)L));
-            dibujo.repaint(); 
+            instrucciones.add(new Instruccion("izquierda",(Integer)L));      // Se genera un objeto de la clase "Instruccion" la cual es almacenada en la lista "instrucciones"
+            dibujo.repaint();   // Se le dice al panel del dibujado a repintar con la nueva instrucción
             :}
             RPAREN
           |
           DER LPAREN D:L  
             {:
-            instrucciones.add(new Instruccion("derecha",(Integer)L));
-            dibujo.repaint(); 
+            instrucciones.add(new Instruccion("derecha",(Integer)L));      // Se genera un objeto de la clase "Instruccion" la cual es almacenada en la lista "instrucciones"
+            dibujo.repaint();   // Se le dice al panel del dibujado a repintar con la nueva instrucción
             :} 
             RPAREN
           |
           ABA LPAREN D:L  
             {: 
-            instrucciones.add(new Instruccion("abajo",(Integer)L));
-            dibujo.repaint(); 
+            instrucciones.add(new Instruccion("abajo",(Integer)L));      // Se genera un objeto de la clase "Instruccion" la cual es almacenada en la lista "instrucciones"
+            dibujo.repaint();   // Se le dice al panel del dibujado a repintar con la nueva instrucción
             :}
             RPAREN
           |
           ARR LPAREN D:L 
             {: 
-            instrucciones.add(new Instruccion("arriba",(Integer)L));
-            dibujo.repaint(); 
+            instrucciones.add(new Instruccion("arriba",(Integer)L));      // Se genera un objeto de la clase "Instruccion" la cual es almacenada en la lista "instrucciones"
+            dibujo.repaint();   // Se le dice al panel del dibujado a repintar con la nueva instrucción
             :} 
             RPAREN
           |
           DAVALOR ID:ID EQUAL N:N 
-            {: memoria.put((Integer)ID, N); :}
+            {: 
+            memoria.put((Integer)ID, N); // Se guarda el valor obtenido N en la tabla segun el ID obtenido.
+            :}
           |
           COLOR LPAREN B:C  
             {: 
-            instrucciones.add(new Instruccion((String)C));
-            dibujo.repaint(); 
+            instrucciones.add(new Instruccion((String)C));      // Se genera un objeto de la clase "Instruccion" la cual es almacenada en la lista "instrucciones"
+            dibujo.repaint();   // Se le dice al panel del dibujado a repintar con la nueva instrucción
             :} 
             RPAREN
           ;
@@ -259,31 +280,49 @@ non terminal Object I, A, S, B, N, D;
     /*  Permite tener acceso a los terminales para las instrucciones de dirreción  */
     
     D ::= ID:ID
-          {: RESULT = memoria.get(ID); :}
+          {: 
+          RESULT = memoria.get(ID); // Se busca el valor guardado por el campo ID en la tabla
+          :}
           |
           DIGITO:D
-          {: RESULT = D; :}
+          {: 
+          RESULT = D; // Se retorna el valor numerico obtenido
+          :}
           ;
 
     /*  Producción B-> ID | C   */
     /*  Permite tener acceso a los terminales para la instruccion de color  */ 
     
     B ::= C:C
-          {: RESULT = C; :}
+          {: 
+          RESULT = C;  // Se retorna el color obtenido como string obtenido
+          :}
           |
           ID:ID
-          {: RESULT = memoria.get(ID); :}
+          {: 
+          RESULT = memoria.get(ID); // Se busca el valor guardado por el campo ID en la tabla
+          :} 
           ;
     
     /*  Producción N-> ID | DIGITO | C  */
-    /*  Permite tener acceso a los terminales para la instruccion de DAVALOR, donde esta instrucción permite generar variables que contengan valores  */
+    /*  
+    Permite tener acceso a los terminales para la instruccion 
+    de DAVALOR, donde esta instrucción permite generar variables 
+    que contengan valores  
+    */
     
     N ::= ID:ID
-          {: RESULT = memoria.get(ID); :}
+          {: 
+          RESULT = memoria.get(ID); // Se busca el valor guardado por el campo ID en la tabla
+          :}
           |
           DIGITO:D
-          {: RESULT = D; :}
+          {: 
+          RESULT = D;  // Se retorna el valor numerico obtenido
+          :}
           |
           C:C
-          {: RESULT = C; :}
+          {: 
+          RESULT = C; // Se retorna el color obtenido como string obtenido
+          :}
           ;
