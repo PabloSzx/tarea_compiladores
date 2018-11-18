@@ -7,12 +7,17 @@ import javax.swing.*;
 import java.util.*;
 
 parser code {:
+
+    
     private JFrame mainFrame;
     private DrawPanel dibujo;
     private ArrayList<Instruccion> instrucciones;
     private Hashtable<Integer,Object> memoria;
     private final Integer escala = 56;
 
+    
+    /*  Se crea una clase para la creación de objetos que definan las instrucciones */
+    
     public class Instruccion{
         String tipo; //color / posicion / linea
 
@@ -47,17 +52,23 @@ parser code {:
     }
 
     public class DrawPanel extends JPanel{
-
+        
+        /*  Genera panel gráfico para dibujar las lineas de las instrucciones ingresadas    */
+        
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
 
             Graphics2D g2d = (Graphics2D)g;
-
+            
+            /*  permite redefinir el origen cuando se ejecute la instruccion posición   */
+            
             AffineTransform origen = g2d.getTransform();
 
+            /*  Recorre las instrucciones ingresadas para dibujarlas en el panel según corresponda  */
+            
             for (Instruccion i:instrucciones) {
                 switch (i.tipo) {
-                    case "color":
+                    case "color":       //permite cambiar el color de la forma a dibujar en el panel
                     {
                         switch (i.color)
                         {
@@ -89,14 +100,14 @@ parser code {:
                         }
                         break;
                     }
-                    case "posicion":
-                    {
+                    case "posicion":    //redefine el origen para posicionar un nuevo objeto a dibujar en el panel según las coordenadas ingresadas
+                    {                   //escala definida es a pixel
                         g2d.setTransform(origen);
                         g.translate(i.x, i.y);
                         break;
                     }
-                    case "linea":
-                    {
+                    case "linea":       //define la dirección del objeto a dibujar en el panel a través de su largo ingresandola en coordenadas 
+                    {                   //escala definida es a centímetros
                         switch (i.direccion) {
                             case "izquierda":
                             {
@@ -128,6 +139,10 @@ parser code {:
             }
         }
     }
+    
+    
+    /*  Manejo de errores para simbolos incorrectos, entregando un mensaje en pantalla */
+    
     public void report_error(String message, Object info) {
 
         StringBuilder m = new StringBuilder("Error");
@@ -153,14 +168,22 @@ parser code {:
     }
 :};
 
-
+/*  Sección que determina los terminales de la gramática a usar */
 terminal    POS, IZQ, DER, ARR, ABA, DAVALOR, COLOR, EDITAR, TERMINO, LPAREN, RPAREN, COMMA, EQUAL;
 terminal String C;
 terminal Integer ID, DIGITO;
    
 
+
+/*  Sección que establece las variables asociadas a la grámatica */
 non terminal Object I, A, S, B, N, D;
 
+
+
+/*  Comienzo de la gramática y ejecución del programa que usa analizador sintáctico    */
+
+    /*  Producción S-> EDITAR A TERMINO   */
+    /*  Ademas de dar comienzo a la grmática para la serie de instrucciones, permite cargar la interfaz gráfica e inicializar algunos componentes   */
    S ::= 
         {: 
         mainFrame = new JFrame("ETT");
@@ -175,14 +198,21 @@ non terminal Object I, A, S, B, N, D;
         EDITAR
          A TERMINO
         ;
+    
+    /*  Producción A-> A I | I */
+    
    A ::= A I
         |
         I
         ;
-
+    
+    /*  Producción I-> POS(X,Y) | IZQ(D) | DER(D) | ARR(D) | ABA(D) | DAVALOR ID=N | COLOR(B) */
+    /*  Permite ingresar a una lista los objetos de tipo Instruccion, las instrucciones capturadas en pantalla, 
+        también guarda en tabla hash terminales de tipo enteros, además de dibujar las lineas de las instrucciones ingresadas   */
+    
     I ::= POS LPAREN N:X COMMA N:Y 
             {:
-            instrucciones.add(new Instruccion((Integer)X,(Integer)Y));
+            instrucciones.add(new Instruccion((Integer)X,(Integer)Y));      //genera un objeto de la clase "Instruccion" cual es almacenada en una lista
             :}
             RPAREN
           |
@@ -225,6 +255,9 @@ non terminal Object I, A, S, B, N, D;
             RPAREN
           ;
     
+    /*  Producción D-> ID | D   */
+    /*  Permite tener acceso a los terminales para las instrucciones de dirreción  */
+    
     D ::= ID:ID
           {: RESULT = memoria.get(ID); :}
           |
@@ -232,12 +265,19 @@ non terminal Object I, A, S, B, N, D;
           {: RESULT = D; :}
           ;
 
+    /*  Producción B-> ID | C   */
+    /*  Permite tener acceso a los terminales para la instruccion de color  */ 
+    
     B ::= C:C
           {: RESULT = C; :}
           |
           ID:ID
           {: RESULT = memoria.get(ID); :}
           ;
+    
+    /*  Producción N-> ID | DIGITO | C  */
+    /*  Permite tener acceso a los terminales para la instruccion de DAVALOR, donde esta instrucción permite generar variables que contengan valores  */
+    
     N ::= ID:ID
           {: RESULT = memoria.get(ID); :}
           |

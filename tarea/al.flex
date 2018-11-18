@@ -16,22 +16,25 @@ this.tabla = new Hashtable<String, Integer>();
 
 %init}
 
-%{   
+%{  
+    
     private Integer i;
     private Hashtable<String, Integer> tabla;
-    /* To create a new java_cup.runtime.Symbol with information about
-       the current token, the token will have no value in this
-       case. */
+    
+    /* crea un objeto simbolo del token capturado, donde para este caso será un blanco */
+    
     private Symbol symbol(int type) {
         return new Symbol(type, yyline, yycolumn);
     }
     
-    /* Also creates a new java_cup.runtime.Symbol with information
-       about the current token, but this object has a value. */
+    /* crea un objeto simbolo del token capturado, con algún valor */
+    
     private Symbol symbol(int type, Object value) {
         return new Symbol(type, yyline, yycolumn, value);
     }
-
+    
+    /*  Evalúa las capturas de la tabla hash ingresando o sacando valores   */
+    
     private int get() {
         int aux;
         if (this.tabla.containsKey(this.yytext())) {
@@ -44,6 +47,8 @@ this.tabla = new Hashtable<String, Integer>();
     }
 %}
 
+
+/*  Determinación del formato de los token que formarán parte de la gramática a partir del analizador léxico   */
 
 ID = [a-zA-Z][a-zA-Z_0-9]*
 
@@ -64,6 +69,10 @@ ABA = aba
 DAVALOR = davalor
 COLOR = color
 %%
+
+
+
+/*  Permite retornar los valores correspondientes a la grámatica a usar, cuando se ingresen los tokens correspondientes para el analisador sintáctico    */
 
 <YYINITIAL> {
 {EDITAR}                        { return symbol(sym.EDITAR); }
@@ -86,5 +95,8 @@ COLOR = color
 
 {WhiteSpace}                    {  /* IGNORE */ }
 }
+
+
+/*  Manejador de errores para simbolos erroneos   */
 
 [^]                    { throw new Error("Illegal character <"+yytext()+">"); }
