@@ -16,7 +16,7 @@ parser code {:
     private DrawPanel dibujo;
     private ArrayList<Instruccion> instrucciones;
     private Hashtable<Integer,Object> memoria;
-    private final Integer escala = 56;
+    private Integer escala;
 
     
     /*  
@@ -202,14 +202,19 @@ non terminal Object I, A, S, B, N, D;
     /*  Ademas de dar comienzo a la gramática para la serie de instrucciones, permite cargar la interfaz gráfica e inicializar algunos componentes   */
    S ::= 
         {: 
-        mainFrame = new JFrame("ETT");
-        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
-        mainFrame.setSize(1440, 900);
-        memoria = new Hashtable<Integer, Object>();
-        instrucciones = new ArrayList<Instruccion>(); 
-        dibujo = new DrawPanel();
-        mainFrame.add(dibujo);
-        mainFrame.setVisible(true);
+        mainFrame = new JFrame("ETT"); // Se inicializa la ventana
+        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // El programa se cierra cuando la ventana se cierra manualmente
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Obtenemos la resolución de la pantalla
+        Integer width = (int)screenSize.getWidth(); // Obtenemos el ancho en pixeles
+        Integer height = (int)screenSize.getHeight(); // Obtenemos el alto en pixeles
+        Double PPI = (Math.sqrt(Math.pow(width, 2)+Math.pow(height,2))) / 15.6; // Hacemos el cálculo considerando una pantalla de 15.6"
+        escala = (int)Math.round(PPI / 2.54); // Hacemos el calculo para pasar de pixel por pulgada a pixel por centimetro y lo consideramos nuestra escala
+        mainFrame.setSize((int)(width * 0.9), (int)(height * 0.9)); // Creamos la ventana como el 90% del tamaño de pantalla disponible
+        memoria = new Hashtable<Integer, Object>(); // Inicializamos la memoria para los identificadores
+        instrucciones = new ArrayList<Instruccion>();  // Inicializamos la lista de instrucciones de dibujado
+        dibujo = new DrawPanel(); // Inicializamos el panel de dibujo
+        mainFrame.add(dibujo); // Añadimos el panel a la ventana
+        mainFrame.setVisible(true); // Lo dejamos visible
          :}
         EDITAR
          A TERMINO

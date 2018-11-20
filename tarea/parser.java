@@ -167,7 +167,7 @@ public class parser extends java_cup.runtime.lr_parser {
     private DrawPanel dibujo;
     private ArrayList<Instruccion> instrucciones;
     private Hashtable<Integer,Object> memoria;
-    private final Integer escala = 56;
+    private Integer escala;
 
     
     /*  
@@ -362,8 +362,13 @@ class CUP$parser$actions {
               Object RESULT =null;
  
         mainFrame = new JFrame("ETT");
-        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
-        mainFrame.setSize(1440, 900);
+        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        Integer width = (int)screenSize.getWidth();
+        Integer height = (int)screenSize.getHeight();
+        Double PPI = (Math.sqrt(Math.pow(width, 2)+Math.pow(height,2))) / 15.6;
+        escala = (int)Math.round(PPI / 2.54);
+        mainFrame.setSize((int)(width * 0.9), (int)(height * 0.9));
         memoria = new Hashtable<Integer, Object>();
         instrucciones = new ArrayList<Instruccion>(); 
         dibujo = new DrawPanel();
