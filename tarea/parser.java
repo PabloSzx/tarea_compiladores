@@ -158,12 +158,23 @@ public class parser extends java_cup.runtime.lr_parser {
 
 
 
+
+    /*
+    Se declaran las variables y constantes que se usarán al transcurso
+    de la ejecución del programa.
+    */
     private JFrame mainFrame;
     private DrawPanel dibujo;
     private ArrayList<Instruccion> instrucciones;
     private Hashtable<Integer,Object> memoria;
     private final Integer escala = 56;
 
+    
+    /*  
+    Se crea una clase para la creación de objetos 
+    que definirán las instrucciones de dibujado 
+    */
+    
     public class Instruccion{
         String tipo; //color / posicion / linea
 
@@ -198,17 +209,26 @@ public class parser extends java_cup.runtime.lr_parser {
     }
 
     public class DrawPanel extends JPanel{
-
+        
+        /*  Genera panel gráfico para dibujar las lineas de las instrucciones ingresadas    */
+        
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
-
+            setBackground(new Color(0, 0, 0));
             Graphics2D g2d = (Graphics2D)g;
-
+            
+            /*  
+            Se guarda la posición origen para ser hacer que la instruccion POS funcione
+            con valores absolutos y no relativos   
+            */
+            
             AffineTransform origen = g2d.getTransform();
 
+            /*  Recorre las instrucciones guardadas para dibujarlas en el panel en el orden que corresponda  */
+            
             for (Instruccion i:instrucciones) {
                 switch (i.tipo) {
-                    case "color":
+                    case "color":       //  Se establece el color para el dibujado de trazos
                     {
                         switch (i.color)
                         {
@@ -237,17 +257,20 @@ public class parser extends java_cup.runtime.lr_parser {
                                 g.setColor(new Color(0, 0, 255));
                                 break;
                             }
+                            default:
+                                break;
                         }
                         break;
                     }
-                    case "posicion":
-                    {
+                    case "posicion":    //  Se redefine el origen para posicionar un nuevo objeto a dibujar en el panel 
+                                        //  según las coordenadas ingresadas.
+                    {                   //  Escala definida es a pixel
                         g2d.setTransform(origen);
                         g.translate(i.x, i.y);
                         break;
                     }
-                    case "linea":
-                    {
+                    case "linea":       //  Define la dirección del trazo a dibujar en el panel con su largo y dirección
+                    {                   //  Escala definida es a centímetros (1 pixel =~ 56 centimetros) (Resolucion 1920x1080, 15.6")
                         switch (i.direccion) {
                             case "izquierda":
                             {
@@ -279,6 +302,10 @@ public class parser extends java_cup.runtime.lr_parser {
             }
         }
     }
+    
+    
+    /*  Manejo de errores para símbolos incorrectos, entregando un mensaje en pantalla */
+    
     public void report_error(String message, Object info) {
 
         StringBuilder m = new StringBuilder("Error");
@@ -400,7 +427,7 @@ class CUP$parser$actions {
 		int Yright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Object Y = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 
-            instrucciones.add(new Instruccion((Integer)X,(Integer)Y));
+            instrucciones.add(new Instruccion((Integer)X,(Integer)Y));      // Se genera un objeto de la clase "Instruccion" la cual es almacenada en la lista "instrucciones"
             
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$1",7, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -431,8 +458,8 @@ class CUP$parser$actions {
 		int Lright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Object L = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
  
-            instrucciones.add(new Instruccion("izquierda",(Integer)L));
-            dibujo.repaint(); 
+            instrucciones.add(new Instruccion("izquierda",(Integer)L));      // Se genera un objeto de la clase "Instruccion" la cual es almacenada en la lista "instrucciones"
+            dibujo.repaint();   // Se le dice al panel del dibujado a repintar con la nueva instrucción
             
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$2",8, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -460,8 +487,8 @@ class CUP$parser$actions {
 		int Lright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Object L = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 
-            instrucciones.add(new Instruccion("derecha",(Integer)L));
-            dibujo.repaint(); 
+            instrucciones.add(new Instruccion("derecha",(Integer)L));      // Se genera un objeto de la clase "Instruccion" la cual es almacenada en la lista "instrucciones"
+            dibujo.repaint();   // Se le dice al panel del dibujado a repintar con la nueva instrucción
             
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$3",9, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -489,8 +516,8 @@ class CUP$parser$actions {
 		int Lright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Object L = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
  
-            instrucciones.add(new Instruccion("abajo",(Integer)L));
-            dibujo.repaint(); 
+            instrucciones.add(new Instruccion("abajo",(Integer)L));      // Se genera un objeto de la clase "Instruccion" la cual es almacenada en la lista "instrucciones"
+            dibujo.repaint();   // Se le dice al panel del dibujado a repintar con la nueva instrucción
             
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$4",10, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -518,8 +545,8 @@ class CUP$parser$actions {
 		int Lright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Object L = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
  
-            instrucciones.add(new Instruccion("arriba",(Integer)L));
-            dibujo.repaint(); 
+            instrucciones.add(new Instruccion("arriba",(Integer)L));      // Se genera un objeto de la clase "Instruccion" la cual es almacenada en la lista "instrucciones"
+            dibujo.repaint();   // Se le dice al panel del dibujado a repintar con la nueva instrucción
             
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$5",11, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -549,7 +576,9 @@ class CUP$parser$actions {
 		int Nleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int Nright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Object N = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 memoria.put((Integer)ID, N); 
+		 
+            memoria.put((Integer)ID, N); // Se guarda el valor obtenido N en la tabla segun el ID obtenido.
+            
               CUP$parser$result = parser.getSymbolFactory().newSymbol("I",0, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -562,8 +591,8 @@ class CUP$parser$actions {
 		int Cright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Object C = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
  
-            instrucciones.add(new Instruccion((String)C));
-            dibujo.repaint(); 
+            instrucciones.add(new Instruccion((String)C));      // Se genera un objeto de la clase "Instruccion" la cual es almacenada en la lista "instrucciones"
+            dibujo.repaint();   // Se le dice al panel del dibujado a repintar con la nueva instrucción
             
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$6",12, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -590,7 +619,9 @@ class CUP$parser$actions {
 		int IDleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int IDright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Integer ID = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = memoria.get(ID); 
+		 
+          RESULT = memoria.get(ID); // Se busca el valor guardado por el campo ID en la tabla
+          
               CUP$parser$result = parser.getSymbolFactory().newSymbol("D",5, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -602,7 +633,9 @@ class CUP$parser$actions {
 		int Dleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int Dright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Integer D = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = D; 
+		 
+          RESULT = D; // Se retorna el valor numerico obtenido
+          
               CUP$parser$result = parser.getSymbolFactory().newSymbol("D",5, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -614,7 +647,9 @@ class CUP$parser$actions {
 		int Cleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int Cright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String C = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = C; 
+		 
+          RESULT = C;  // Se retorna el color obtenido como string obtenido
+          
               CUP$parser$result = parser.getSymbolFactory().newSymbol("B",3, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -626,7 +661,9 @@ class CUP$parser$actions {
 		int IDleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int IDright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Integer ID = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = memoria.get(ID); 
+		 
+          RESULT = memoria.get(ID); // Se busca el valor guardado por el campo ID en la tabla
+          
               CUP$parser$result = parser.getSymbolFactory().newSymbol("B",3, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -638,7 +675,9 @@ class CUP$parser$actions {
 		int IDleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int IDright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Integer ID = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = memoria.get(ID); 
+		 
+          RESULT = memoria.get(ID); // Se busca el valor guardado por el campo ID en la tabla
+          
               CUP$parser$result = parser.getSymbolFactory().newSymbol("N",4, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -650,7 +689,9 @@ class CUP$parser$actions {
 		int Dleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int Dright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Integer D = (Integer)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = D; 
+		 
+          RESULT = D;  // Se retorna el valor numerico obtenido
+          
               CUP$parser$result = parser.getSymbolFactory().newSymbol("N",4, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -662,7 +703,9 @@ class CUP$parser$actions {
 		int Cleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int Cright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String C = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = C; 
+		 
+          RESULT = C; // Se retorna el color obtenido como string obtenido
+          
               CUP$parser$result = parser.getSymbolFactory().newSymbol("N",4, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;

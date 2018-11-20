@@ -63,9 +63,10 @@ parser code {:
         
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
-
             Graphics2D g2d = (Graphics2D)g;
-            
+
+            setBackground(new Color(0, 0, 0)); // Establecemos el color de fondo del dibujo en negro
+            g.setColor(new Color(255, 255, 255)); // Establecemos el color por defecto de los trazos color blanco
             /*  
             Se guarda la posición origen para ser hacer que la instruccion POS funcione
             con valores absolutos y no relativos   
