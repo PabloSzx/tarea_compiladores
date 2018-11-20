@@ -45,7 +45,7 @@ this.tabla = new Hashtable<String, Integer>();
     }
     
     /*
-    Definimos la función que se ocupara para la creación y
+    Definimos la función que se ocupará de la creación y
     obtención de los valores numericos asociados a cada ID
     */
     
