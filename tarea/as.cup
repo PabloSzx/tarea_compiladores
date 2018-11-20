@@ -282,7 +282,7 @@ non terminal Object I, A, S, B, N, D;
             RPAREN
           ;
     
-    /*  Producción D-> ID | D   */
+    /*  Producción D-> ID | DIGITO   */
     /*  Permite tener acceso a los terminales para las instrucciones de dirreción  */
     
     D ::= ID:ID
