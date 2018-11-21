@@ -143,7 +143,7 @@ parser code {:
                             case "arriba":
                             {
                                 g.drawLine(0, 0, 0, -i.largo * escala);
-                                g.translate(0, i.largo * escala);
+                                g.translate(0, -i.largo * escala);
                                 break;
                             }
                         }

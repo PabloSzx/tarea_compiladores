@@ -4,3 +4,6 @@
 va
 sym.java
 parser.java
+tarea/Lexer\.java
+
+*.java
