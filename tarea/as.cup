@@ -217,7 +217,24 @@ non terminal Object I, A, S, B, N, D;
         mainFrame.setVisible(true); // Lo dejamos visible
          :}
         EDITAR
-         A TERMINO
+         A 
+        {:
+            System.out.println("\n\nGracias por usar ETT.\n\n");
+            System.out.print("\nEl programa se cerrará en 5 segundos.");
+            Thread.sleep(1000);
+            System.out.print(".");
+            Thread.sleep(1000);
+            System.out.print(".");
+            Thread.sleep(1000);
+            System.out.print(".");
+            Thread.sleep(1000);
+            System.out.print(".");
+            Thread.sleep(1000);
+            System.out.print(".\n");
+            mainFrame.dispose();
+            System.exit(0);
+         :}
+         TERMINO
         ;
     
     /*  Producción A-> A I | I */
