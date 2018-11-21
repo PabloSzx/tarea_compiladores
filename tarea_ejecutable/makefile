@@ -1,2 +1,2 @@
 all:
-	bash compiladores.sh
+	bash ETT-Linux.sh
